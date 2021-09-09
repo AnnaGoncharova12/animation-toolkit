@@ -14,17 +14,13 @@ class Sphere2D : public atkui::Framework {
     // draw a sphere at center of screen
     double x = width() * 0.5;
     double y = height() * 0.5;
-    /*
-    double x1=width() * 0.75;
-    double y1=height() * 0.75;
-    */
     double radius = 100; 
 
-   
-       
+    //draw smaller green sphere with increased z value first   
     setColor(vec3(0,1,0));
     drawSphere(vec3(x,y,100), radius);
-      
+
+    //draw bigger red sphere aftewards with a smaller z value
     setColor(vec3(1,0,0));
     drawSphere(vec3(x,y,0), radius*2);
  
