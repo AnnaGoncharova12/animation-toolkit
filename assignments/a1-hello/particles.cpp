@@ -19,11 +19,12 @@ class Particles : public atkui::Framework
   virtual void setup() {
     //arr= {};
     //p1=agl::randomUnitVector();
+    //create particles at different positions
     for(int i=0;i<250;i++){
-      arr[i]={agl::randomUnitVector(), agl::randomUnitVector(), ((float)(rand()%60+1))};
+      arr[i]={agl::randomUnitVector(), agl::randomUnitVector(), ((float)(rand()%60+10))};
      
-      arr[i].currPos.x=(rand()%200+1)*abs(arr[i].currPos.x);
-      arr[i].currPos.y=(rand()%200+1)*abs(arr[i].currPos.y);
+      arr[i].currPos.x=(rand()%500+1)*abs(arr[i].currPos.x);
+      arr[i].currPos.y=(rand()%500+1)*abs(arr[i].currPos.y);
       arr[i].currPos.z=0;
        cout << arr[i].currPos ;
       //cout << "Hello";
@@ -34,15 +35,15 @@ class Particles : public atkui::Framework
   virtual void scene() {
     for(int i=0;i<250;i++){
       setColor(arr[i].color);
+      //move particles at different speeds
       float t = elapsedTime()/arr[i].duration;
-      if(arr[i].currPos.x>=width()||arr[i].currPos.y>=height()){
+      if(arr[i].currPos.x>=500||arr[i].currPos.y>=height()){
            arr[i].currPos=agl::randomUnitVector();
-           arr[i].currPos.x=0;
-           arr[i].currPos.y=(rand()%200+1)*abs(arr[i].currPos.y);
+           arr[i].currPos.x=(rand()%500+1)*abs(arr[i].currPos.x);
+           arr[i].currPos.y=(rand()%500+1)*abs(arr[i].currPos.y);
            arr[i].currPos.z=0;
         }
-      
-      arr[i].currPos=(1-t) * arr[i].currPos+ t * p1;
+       arr[i].currPos=(1-t) * arr[i].currPos+ t * p1;
       
       drawSphere(arr[i].currPos, 15);
       //setColor(vec3(1, 1, 1));
