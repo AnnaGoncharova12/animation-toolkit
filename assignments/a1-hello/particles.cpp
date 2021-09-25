@@ -51,6 +51,7 @@ class Particles : public atkui::Framework
     }
      
   }
+  
   private:
   vec3 p1=vec3(500, 250, 0);
   float rad=3;
