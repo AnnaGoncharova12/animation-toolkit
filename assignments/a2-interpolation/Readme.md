@@ -23,4 +23,5 @@
 
 5.cubic curves with control points animated by a sin()
 
-![unique](https://user-images.githubusercontent.com/78485605/134755182-664130cd-89f3-47ba-b00c-992c58af6e6c.gif)
+
+![rainbow_unique_final](https://user-images.githubusercontent.com/78485605/134756212-c37f6e67-6b68-4d07-a712-5fe57f6b336f.gif)
