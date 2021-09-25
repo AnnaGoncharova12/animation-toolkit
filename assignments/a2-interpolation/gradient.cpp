@@ -10,8 +10,8 @@ class Gradient : public atkui::Framework {
       x=width();
       y=height();
       N=30;
-      rows=y/N;
-      cols=x/N;
+      rows=y/N+1;
+      cols=x/N+1;
 
     }
   virtual void scene() {
@@ -38,6 +38,7 @@ class Gradient : public atkui::Framework {
 
   }
   private:
+  //corners
   vec3 NW = vec3(1,1,0);
   vec3 NE = vec3(0,1,1);
   vec3 SW = vec3(1, 0, 0);
