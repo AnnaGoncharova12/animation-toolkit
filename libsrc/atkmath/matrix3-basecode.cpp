@@ -5,7 +5,23 @@ namespace atkmath {
 
 Vector3 Matrix3::toEulerAnglesXYZ() const
 {
-   return Vector3();
+   float angleY=0.0f;
+   float angleX=0.0f;
+   float angleZ=0.0f;
+   float helpTerm=this->m13;
+   if(helpTerm==1){
+        return Vector3(atan2(this->m32, this->m22), PI/2, 0);
+   }
+   else if(helpTerm==-1){
+      return Vector3(atan2(this->m32, this->m22), -PI/2, 0);
+   }
+   else{
+      angleY=asin(helpTerm);
+      angleX=atan2(-(this->m23), this->m33);
+      angleZ=atan2(-(this->m12), this->m11);
+      return Vector3(angleX, angleY, angleZ);
+   }
+  
 }
 
 Vector3 Matrix3::toEulerAnglesXZY() const
