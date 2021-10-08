@@ -26,27 +26,100 @@ Vector3 Matrix3::toEulerAnglesXYZ() const
 
 Vector3 Matrix3::toEulerAnglesXZY() const
 {
-   return Vector3();
+   float angleY=0.0f;
+   float angleX=0.0f;
+   float angleZ=0.0f;
+   float helpTerm=-(this->m12);
+   if(helpTerm==1){
+        return Vector3(0.0f,atan2(this->m23, this->m33), PI/2);
+   }
+   else if(helpTerm==-1){
+      return Vector3(0.0f,atan2(-(this->m23), this->m33), -PI/2);
+   }
+   else{
+      angleZ=asin(helpTerm);
+      angleY=atan2(this->m13, this->m11);
+      angleX=atan2(this->m32, this->m22);
+      return Vector3(angleX, angleY, angleZ);
+   }
 }
+
 
 Vector3 Matrix3::toEulerAnglesYXZ() const
 {
-   return Vector3();
+   float angleY=0.0f;
+   float angleX=0.0f;
+   float angleZ=0.0f;
+   float helpTerm=(this->m23);
+   if(helpTerm==-1){
+      return  Vector3(PI/2, 0.0f,atan2(this->m31, this->m32));
+   }
+   else if(helpTerm==1){
+      return Vector3(-PI/2,atan2(-(this->m31),-(this->m32)),0.0f);
+   }
+   else{
+      angleX=asin(-helpTerm);
+      angleY=atan2(this->m13, this->m33);
+      angleZ=atan2(this->m21, this->m22);
+      return Vector3(angleX, angleY, angleZ);
+   
+   }
 }
 
 Vector3 Matrix3::toEulerAnglesYZX() const
 {
-   return Vector3();
+   float angleY=0.0f;
+   float angleX=0.0f;
+   float angleZ=0.0f;
+   float helpTerm=(this->m21);
+   if(helpTerm==1){
+      return Vector3(atan2(this->m13, this->m33),0.0f,PI/2);
+   }
+   else if(helpTerm==-1){
+      return Vector3(atan2(this->m32, this->m12), 0.0f, -PI/2);
+   }
+   else{
+      angleX=atan2(-(this->m23), this->m22);
+      angleY=atan2(-(this->m31), this->m11);
+      angleZ=asin(helpTerm);
+      return Vector3(angleX, angleY, angleZ);
+   
+   }
 }
 
 Vector3 Matrix3::toEulerAnglesZXY() const
 {
-   return Vector3();
+    float helpTerm=(this->m32);
+    float angleX=asin(helpTerm);
+    float angleY=atan2(-(this->m31), this->m33);
+    float angleZ=atan2(-(this->m12), this->m22);
+    if(helpTerm==1){
+       return Vector3(PI/2,atan2(this->m13, -(this->m23)), 0.0f);
+    }
+    else if(helpTerm==-1){
+       return Vector3(-PI/2, 0.0f, atan2(this->m21, this->m11));
+    }
+    else{
+       
+         return Vector3(angleX, angleY, angleZ);
+    }
 }
 
 Vector3 Matrix3::toEulerAnglesZYX() const
 {
-   return Vector3();
+   float helpTerm=(this->m31);
+   float angleY=asin(-helpTerm);
+   float angleZ=atan2(this->m21, this->m11);
+   float angleX=atan2(this->m32, this->m33);
+   if(helpTerm==-1){
+      return Vector3(atan2(this->m12, this->m22), PI/2, 0.0f);
+   }
+   else if(helpTerm==1){
+       return Vector3(atan2(-(this->m12), -(this->m13)), -PI/2,0.0f);
+   }
+   else{
+        return Vector3(angleX, angleY, angleZ);
+   }
 }
 
 void Matrix3::fromEulerAnglesXYZ(const Vector3& angleRad)
