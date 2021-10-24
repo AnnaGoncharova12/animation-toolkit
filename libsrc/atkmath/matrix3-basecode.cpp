@@ -1,6 +1,7 @@
 #include "atkmath/matrix3.h"
 #include "atkmath/quaternion.h"
-
+#include <math.h>
+#include <algorithm>
 namespace atkmath {
 
 Vector3 Matrix3::toEulerAnglesXYZ() const
@@ -142,12 +143,8 @@ void Matrix3::fromEulerAnglesXZY(const Vector3& angleRad)
 
 void Matrix3::fromEulerAnglesYXZ(const Vector3& angleRad)
 {
-   Matrix3 myRz=Rz(angleRad[2]);
-   Matrix3 myRy=Ry(angleRad[1]);
-   Matrix3 myRx=Rx(angleRad[0]);
-   Matrix3 intermediate = operator * (myRy,myRx);
-   *this = operator * (intermediate, myRz);
-}
+   // TODO
+};
 
 void Matrix3::fromEulerAnglesYZX(const Vector3& angleRad)
 {
@@ -178,13 +175,62 @@ void Matrix3::fromEulerAnglesZYX(const Vector3& angleRad)
 
 void Matrix3::toAxisAngle(Vector3& axis, double& angleRad) const
 {
-   // TODO
+   
+   Quaternion q = Quaternion();
+   //q.fromMatrix(*this);
+   //Matrix3 rot = this;
+   double w = 0.0;
+	double x = 0.0;
+	double y = 0.0;
+	double z = 0.0;
+
+	double wSquared = (this->m11+this->m22+this->m33+1)/4.0;
+	double xSquared = (this->m11-this->m22-this->m33+1)/4.0;
+	double ySquared = (-this->m11+this->m22-this->m33+1)/4.0;
+	double zSquared = (-this->m11-this->m22-this->m33+1)/4.0;
+
+	double max = std::max(std::max(wSquared, zSquared), std::max(xSquared, ySquared));
+    if(max == wSquared){
+		w = sqrt(wSquared);
+		x = ((this->m32-this->m23)/4.0)/w;
+		y = ((this->m13-this->m31)/4.0)/w;
+		z = ((this->m21-this->m12)/4.0)/w;
+	}
+	else if(max == xSquared){
+		x = sqrt(xSquared);
+		w = ((this->m32-this->m23)/4.0)/x;
+		y = ((this->m21+this->m12)/4.0)/x;
+		z = ((this->m13+this->m31)/4.0)/x;
+	}
+	else if( max == ySquared){
+		y = sqrt(ySquared);
+		w = ((this->m13-this->m31)/4.0)/y;
+		x = ((this->m21+this->m12)/4.0)/y;
+		z = ((this->m23+this->m32)/4.0)/y;
+	}
+	else{
+		z = sqrt(zSquared);
+		w = ((this->m21-this->m12)/4.0)/z;
+		y = ((this->m23+this->m32)/4.0)/z;
+		x = ((this->m13+this->m31)/4.0)/z;
+
+	}
+
+   q =  Quaternion(x, y ,z , w);
+   q.normalize();
+   axis = Vector3(q.x(), q.y(), q.z());
+   angleRad= q.w();
+   
 }
 
 void Matrix3::fromAxisAngle(const Vector3& axis, double angleRad)
 {
-   // TODO
-   *this = Identity;
+   
+   Quaternion q = Quaternion();
+   q.fromAxisAngle(axis, angleRad);
+   q.normalize();
+   *this = q.toMatrix();
+   
 }
 
 Matrix3 Matrix3::Rx(float angle){
