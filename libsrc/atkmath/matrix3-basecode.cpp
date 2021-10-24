@@ -143,7 +143,11 @@ void Matrix3::fromEulerAnglesXZY(const Vector3& angleRad)
 
 void Matrix3::fromEulerAnglesYXZ(const Vector3& angleRad)
 {
-   // TODO
+   Matrix3 myRz=Rz(angleRad[2]);
+   Matrix3 myRy=Ry(angleRad[1]);
+   Matrix3 myRx=Rx(angleRad[0]);
+   Matrix3 intermediate = operator * (myRy,myRx);
+   *this = operator * (intermediate, myRz);
 };
 
 void Matrix3::fromEulerAnglesYZX(const Vector3& angleRad)
@@ -190,7 +194,7 @@ void Matrix3::toAxisAngle(Vector3& axis, double& angleRad) const
 	double zSquared = (-this->m11-this->m22-this->m33+1)/4.0;
 
 	double max = std::max(std::max(wSquared, zSquared), std::max(xSquared, ySquared));
-    if(max == wSquared){
+    if(max == wSquared){ 
 		w = sqrt(wSquared);
 		x = ((this->m32-this->m23)/4.0)/w;
 		y = ((this->m13-this->m31)/4.0)/w;
