@@ -192,7 +192,7 @@ void Matrix3::toAxisAngle(Vector3& axis, double& angleRad) const
 	double xSquared = (this->m11-this->m22-this->m33+1)/4.0;
 	double ySquared = (-this->m11+this->m22-this->m33+1)/4.0;
 	double zSquared = (-this->m11-this->m22-this->m33+1)/4.0;
-
+   //find the largest number and base calculations off it
 	double max = std::max(std::max(wSquared, zSquared), std::max(xSquared, ySquared));
     if(max == wSquared){ 
 		w = sqrt(wSquared);
@@ -231,6 +231,7 @@ void Matrix3::fromAxisAngle(const Vector3& axis, double angleRad)
 {
    
    Quaternion q = Quaternion();
+   //use the quaternion function
    q.fromAxisAngle(axis, angleRad);
    q.normalize();
    *this = q.toMatrix();
