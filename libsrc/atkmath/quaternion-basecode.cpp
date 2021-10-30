@@ -8,7 +8,13 @@ namespace atkmath {
 
 Quaternion Quaternion::Slerp(const Quaternion& q0, const Quaternion& q1, double t)
 {
-	double omega = acos(Dot(q0, q1));
+    double dot = Dot(q0, q1);
+    if(dot<0){
+		Quaternion q2 = operator- (q1);
+		double dot = Dot(q0, q2);
+	}
+	float omega = acos(dot);
+	   std::cout << omega << std::endl; 
     if(omega==0.0||t==0.0){
         return q0;
     }
@@ -16,8 +22,10 @@ Quaternion Quaternion::Slerp(const Quaternion& q0, const Quaternion& q1, double 
         return q1;
     }
     //std::cout << omega;
-  
-    Quaternion toReturn = (sin(omega*(1-t))/sin(omega))*q0+(sin(omega*t)/sin(t))*q1;
+
+    double a =(sin(omega*(1-t))/sin(omega));
+    double b = (sin(omega*t)/sin(omega));
+    Quaternion toReturn = operator+ ( operator* (a, q0), operator* (b, q1));
 	return toReturn;
 }
 
