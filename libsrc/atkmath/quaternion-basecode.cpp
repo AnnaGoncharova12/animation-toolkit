@@ -8,8 +8,17 @@ namespace atkmath {
 
 Quaternion Quaternion::Slerp(const Quaternion& q0, const Quaternion& q1, double t)
 {
-	// TODO
-	return Quaternion(1,0,0,0);
+	double omega = acos(Dot(q0, q1));
+    if(omega==0.0||t==0.0){
+        return q0;
+    }
+    if(t==1.0){
+        return q1;
+    }
+    //std::cout << omega;
+  
+    Quaternion toReturn = (sin(omega*(1-t))/sin(omega))*q0+(sin(omega*t)/sin(t))*q1;
+	return toReturn;
 }
 
 void Quaternion::toAxisAngle (Vector3& axis, double& angleRad) const
@@ -61,3 +70,4 @@ void Quaternion::fromMatrix(const Matrix3& rot)
 }
 
 }
+
