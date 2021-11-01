@@ -15,6 +15,7 @@ Quaternion Quaternion::Slerp(const Quaternion& q0, const Quaternion& q1, double 
 	}
 	float omega = acos(dot);
 	   std::cout << omega << std::endl; 
+	   //check for edge cases
     if(omega==0.0||t==0.0){
         return q0;
     }
