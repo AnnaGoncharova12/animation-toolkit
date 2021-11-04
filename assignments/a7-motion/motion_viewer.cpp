@@ -13,13 +13,17 @@ public:
 
    void setup() {
       BVHReader reader;
-      reader.load("../motions/Beta/jump.bvh", skeleton, motion);
+       std::cout << filename << std::endl;
+      reader.load(filename, skeleton, motion);
       motion.update(skeleton, 0);
    }
 
    void scene() {
       time += dt();
-      motion.update(skeleton, time);
+      if(!paused){
+         motion.update(skeleton, time);
+        currentFrame = motion.getKeyID(time);
+      }
 
       setColor(vec3(0,0,0.8));
       for (int i = 0; i < skeleton.getNumJoints(); i++) {
@@ -37,12 +41,40 @@ public:
    }
 
    virtual void keyUp(int key, int mods) {
+      if(key=='P'){
+          paused=!paused;
+      }
+      else if(key=='0'){
+          currentFrame=0;
+      }
+      else if(key=='.'){
+         currentFrame++;
+         if(currentFrame>=motion.getNumKeys()){
+            currentFrame=0;
+         }
+          skeleton.setPose(motion.getKey(currentFrame));
+      }
+      else if(key==','){
+         currentFrame--;
+         if(currentFrame<0){
+            currentFrame=motion.getNumKeys()-1;
+         }
+         skeleton.setPose(motion.getKey(currentFrame));
+      }
+      else if(key==']'){
+             motion.setFramerate(motion.getFramerate()*2.0);
+      }
+      else if(key=='['){
+             motion.setFramerate(motion.getFramerate()/2.0);
+      }
    }
-
+void setFile(std::string name){
+   filename=name;
+}
 private:
    Skeleton skeleton;
    Motion motion;
-
+   std::string filename;
    float timeScale = 1.0f;
    int currentFrame = 0; 
    bool paused = false;
@@ -52,5 +84,11 @@ private:
 
 int main(int argc, char** argv) {
    MotionViewer viewer;
+   if(argc>1){
+      viewer.setFile(argv[1]);
+   }
+   else{
+      viewer.setFile("../motions/Beta/jump.bvh");
+   }
    viewer.run();
 }
