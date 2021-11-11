@@ -3,10 +3,12 @@
 #include "atkui/skeleton_drawer.h"
 #include <algorithm>
 #include <string>
+#include<queue>
 
 using namespace atk;
 using namespace atkui;
 using namespace glm;
+using namespace std;
 
 class ASplice : public atkui::Framework
 {
@@ -29,7 +31,48 @@ public:
       Motion result;
       result.setFramerate(lower.getFramerate());
       // todo: your code here
-      result.appendKey(lower.getKey(0));
+      int numKeys = lower.getNumKeys();
+      int skelNum = _skeleton.getNumJoints();
+      bool upperBody [skelNum] = {};
+      queue<int> q =queue<int>();
+      q.push(2);
+      while(!q.empty()){
+         int id = q.front();
+         q.pop();
+         upperBody[id] = true;
+         Joint* curr = _skeleton.getByID(id);
+         int children = curr->getNumChildren();
+         for(int i =0;i<children;i++){
+            Joint* child = curr -> getChildAt(i);
+            q.push(child->getID());
+         }
+      }
+      /*
+      for(int i =0;i<skelNum;i++){
+            std::cout << i << " " <<_skeleton.getByID(i)->getName() << std::endl;
+      }
+      */
+
+
+      for(int i=0;i<numKeys;i++){
+         Pose pose1 = lower.getKey(i);
+         Pose pose2 = upper.getKey(i);
+         Joint* upperJoint = _skeleton.getByID(2); //Beta:Spine1
+         Pose newPose = Pose();
+         newPose.rootPos = pose1.rootPos;
+         for(int j = 0;j<skelNum;j++){
+              if(upperBody[j]){
+                 newPose.jointRots.push_back(glm::slerp(pose1.jointRots[j], pose2.jointRots[j], alpha));
+              }
+              else{
+                 newPose.jointRots.push_back(pose1.jointRots[j]);
+              }
+         }
+         //how to use the joint in its descendants in lerp
+         
+         result.appendKey(newPose); 
+      }
+      
       return result;
    }
 

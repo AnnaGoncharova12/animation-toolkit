@@ -34,8 +34,26 @@ public:
 
       Motion result;
       result.setFramerate(motion.getFramerate());
+      Transform t = rightArm->getLocal2Parent().inverse();
+      quat Rij = t.r();
+      quat offsetRight = rightLocalRot * Rij;
+
+      t = leftArm->getLocal2Parent().inverse();
+      Rij = t.r();
+      quat offsetLeft = leftLocalRot * Rij;
       // todo: your code here
-      result.appendKey(motion.getKey(0));
+      int numKeys=motion.getNumKeys();
+      for(int i=0;i<numKeys;i++){
+         Pose pose = motion.getKey(i);
+         //update joint rotations in the pose
+         pose.jointRots[rightArm->getID()] = pose.jointRots[rightArm->getID()] * offsetRight ;
+         pose.jointRots[leftArm->getID()] = pose.jointRots[leftArm->getID()] *offsetLeft;
+         pose.jointRots[leftElbow->getID()] = elbowLocalRot;
+         pose.jointRots[rightElbow->getID()] = elbowLocalRot;
+         
+         result.appendKey(pose);
+      }
+   
 
       return result;
    }
