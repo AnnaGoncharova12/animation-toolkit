@@ -54,7 +54,23 @@ public:
       Motion result;
       result.setFramerate(motion.getFramerate());
       // todo: your code here
-      result.appendKey(motion.getKey(0));
+      /*
+      leftArm.setLocalRotation(leftRot);
+      rightArm.setLocalRotation(rightRot);
+      leftElbow.setLocalRotation(elbowRot);
+      rightElbow.setLocalRotation(elbowRot);
+      */
+      int numKeys=motion.getNumKeys();
+      for(int i=0;i<numKeys;i++){
+         Pose pose = motion.getKey(i);
+         //update joint rotations in the pose
+         pose.jointRots[leftArm->getID()] = leftRot;
+         pose.jointRots[leftElbow->getID()] = elbowRot;
+         pose.jointRots[rightElbow->getID()] = elbowRot;
+         pose.jointRots[rightArm->getID()] = rightRot;
+         result.appendKey(pose);
+      }
+     
 
       return result;
    }
