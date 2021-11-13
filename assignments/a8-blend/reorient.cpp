@@ -34,8 +34,39 @@ public:
       result.setFramerate(motion.getFramerate());
 
       // todo: your code here
+      
+
       Pose pose = motion.getKey(0);
+      quat curr = pose.jointRots[0];
+      //use angleAxis, instead of constructor
+      quat desired = glm::angleAxis (heading, vec3(0, 1, 0));
+      quat deltaR = (inverse(curr))*desired;
+      //identity quat and reverse translation vec3 to move root to the origin
+      Transform one = Transform(quat(0, vec3(1, 0, 0)), vec3(-pose.rootPos.x, -pose.rootPos.y, -pose.rootPos.z));
+      Transform desiredTr = Transform(desired, pos);
+      Transform orig = Transform(curr, pose.rootPos);
+      Transform offset = desiredTr*(orig.inverse());
+      //get first frame root transfrom
+      Transform intermediate = orig * one;
+      Transform newTr = intermediate * desiredTr;
+      //vec3 oldRoot = pose.rootPos;
+      pose.rootPos = newTr.t();
+      pose.jointRots[0] = newTr.r();
       result.appendKey(pose);
+      
+
+      int numKeys = motion.getNumKeys();
+      for(int i=1;i<numKeys;i++){
+          Pose pose = motion.getKey(i);
+          //calculate the transfrom for frame i
+          Transform currTransform = Transform(pose.jointRots[0], pose.rootPos);
+          Transform currOffset = offset * currTransform;
+          pose.rootPos = currOffset.t();
+          pose.jointRots[0] = currOffset.r();
+          result.appendKey(pose);
+      }
+
+      
       
       return result;
    }
