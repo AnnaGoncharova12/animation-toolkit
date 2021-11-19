@@ -53,8 +53,11 @@ Motion blend(const Motion& m1, const Motion& m2, double alpha)
     assert(numBlendFrames <= motion1_.getNumKeys());
     assert(numBlendFrames <= motion2_.getNumKeys());
     //framerate slow down doesn't work
-   motion1_.setFramerate(motion1_.getFramerate()/15.0);
-    motion2_.setFramerate(motion2_.getFramerate()/15.0);
+    /*
+   motion1_.setFramerate(motion1_.getFramerate());
+    motion2_.setFramerate(motion2_.getFramerate());
+    */
+    blend_.setFramerate(motion1_.getFramerate());
     int start1 = motion1_.getNumKeys() - numBlendFrames;
     int start2 = 0;
     //part 1.1
@@ -91,8 +94,14 @@ Motion blend(const Motion& m1, const Motion& m2, double alpha)
           //calculate the transfrom for frame i
           Transform currTransform = Transform(poseJump.jointRots[0], poseJump.rootPos);
           Transform currOffset = offset * currTransform;
+          Pose newPose = poseJump;
+          poseJump.rootPos= currOffset.t();
+          poseJump.jointRots[0] = currOffset.r();
+          motion2_.editKey(i, poseJump );
+          /*
           motion2_.getKey(i).rootPos = currOffset.t();
           motion2_.getKey(i).jointRots[0] = currOffset.r();
+          */
          
     }
 
