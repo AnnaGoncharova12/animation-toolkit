@@ -2,6 +2,8 @@
 #include <string>
 #include <algorithm>
 #include <iostream>
+#include <math.h>
+#include <algorithm>
 #include "atk/toolkit.h"
 #include "atkui/skeleton_drawer.h"
 #include "atkui/framework.h"
@@ -11,6 +13,7 @@
 
 using namespace atk;
 using namespace glm;
+
 
 class AIKSimple : public atkui::Framework
 {
@@ -126,7 +129,50 @@ class AIKSimple : public atkui::Framework
 
   void solveIKTwoLink(Skeleton &skeleton, const vec3 &goalPosition)
   {
-    // todo: implement two link IK algorithm
+    // Place the Skeleton's end effector at goalPos
+// Skeleton will contain a two-link chain
+// Assume joint 0 is the root
+// Assume joint 1 is the middle joint
+// Assume joint 2 is the end effector
+//set up knowns
+    vec3 goal = vec3(100, 0, 0);
+    Joint* root = skeleton.getByID(0); 
+    Joint* middle = skeleton.getByID(1); 
+    Joint* end = skeleton.getByID(2); 
+    vec3 middleToRoot = middle->getLocalTranslation();
+    vec3 endToMiddle = end->getLocalTranslation();
+    float l1 = glm::length(middleToRoot);
+    float l2 = glm::length(endToMiddle);
+    /*
+    for(int i=0;i<skeleton.getNumJoints();i++){
+      std::cout<< i << " " <<skeleton.getByID(i)->getName()<<std::endl;
+    }
+    */
+    float r = glm::length(goal - skeleton.getPose().rootPos);
+
+    //step 1
+    float cosPhi = (r*r-l1*l1-l2*l2)/(-2*l1*l2);
+    float theta2Z = acos(cosPhi) - 2*acos(0.0);
+    //quat curr2= middle->getLocalRotation();
+    middle->setLocalRotation(glm::angleAxis (theta2Z, vec3(0, 0, 1)));
+    skeleton.fk();
+    float dist = glm::length(skeleton.getByID(2)->getGlobalTranslation() - skeleton.getByID(0)->getGlobalTranslation());
+    std::cout<<dist<<std::endl;
+    //step2
+    float theta1Z = asin((-l2*sin(theta2Z))/r);
+    
+    root->setLocalRotation(glm::angleAxis (theta1Z, vec3(0, 0, 1)));
+    skeleton.fk();
+  
+    //step3
+    float gamma = asin((goal.y-skeleton.getPose().rootPos.y)/r);
+    float beta = atan2(-(goal.z-skeleton.getPose().rootPos.z), (goal.x-skeleton.getPose().rootPos.x));
+     root->setLocalRotation(glm::angleAxis (beta, vec3(0, 1, 0)));
+     root->setLocalRotation(glm::angleAxis (gamma, vec3(0, 0, 1)));
+     root->setLocalRotation(glm::angleAxis (theta1Z, vec3(0, 0, 1)));
+    skeleton.fk();
+
+
   }
 
  private:
