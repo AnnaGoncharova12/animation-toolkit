@@ -1,7 +1,7 @@
 # Readme
+part 1: crossfade
 
-TODO: Replace this text with
+![crossfade](https://user-images.githubusercontent.com/78485605/142776944-1e011c17-8053-44da-ab6c-187b513cf1f9.gif)
 
-* images, gifs, videos
-* brief description of what each image/gif/video shows
-
+part 4: character with a robot head
+![unique](https://user-images.githubusercontent.com/78485605/142776954-bc76c8ba-c1dd-4769-a1bb-a280323cabcd.gif)
