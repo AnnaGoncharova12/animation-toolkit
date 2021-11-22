@@ -135,7 +135,9 @@ class AIKSimple : public atkui::Framework
 // Assume joint 1 is the middle joint
 // Assume joint 2 is the end effector
 //set up knowns
-    vec3 goal = vec3(100, 100, 100);
+//vec3 goal = vec3(100, 100, 100);
+//vec3 goal = vec3(100, 0, 0);
+    vec3 goal = goalPosition;
     Joint* root = skeleton.getByID(0); 
     Joint* middle = skeleton.getByID(1); 
     Joint* end = skeleton.getByID(2); 
