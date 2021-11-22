@@ -135,7 +135,7 @@ class AIKSimple : public atkui::Framework
 // Assume joint 1 is the middle joint
 // Assume joint 2 is the end effector
 //set up knowns
-    vec3 goal = vec3(100, 0, 0);
+    vec3 goal = vec3(100, 100, 100);
     Joint* root = skeleton.getByID(0); 
     Joint* middle = skeleton.getByID(1); 
     Joint* end = skeleton.getByID(2); 
@@ -143,11 +143,7 @@ class AIKSimple : public atkui::Framework
     vec3 endToMiddle = end->getLocalTranslation();
     float l1 = glm::length(middleToRoot);
     float l2 = glm::length(endToMiddle);
-    /*
-    for(int i=0;i<skeleton.getNumJoints();i++){
-      std::cout<< i << " " <<skeleton.getByID(i)->getName()<<std::endl;
-    }
-    */
+    
     float r = glm::length(goal - skeleton.getPose().rootPos);
 
     //step 1
@@ -160,16 +156,16 @@ class AIKSimple : public atkui::Framework
     std::cout<<dist<<std::endl;
     //step2
     float theta1Z = asin((-l2*sin(theta2Z))/r);
-    
     root->setLocalRotation(glm::angleAxis (theta1Z, vec3(0, 0, 1)));
     skeleton.fk();
   
     //step3
     float gamma = asin((goal.y-skeleton.getPose().rootPos.y)/r);
     float beta = atan2(-(goal.z-skeleton.getPose().rootPos.z), (goal.x-skeleton.getPose().rootPos.x));
-     root->setLocalRotation(glm::angleAxis (beta, vec3(0, 1, 0)));
-     root->setLocalRotation(glm::angleAxis (gamma, vec3(0, 0, 1)));
-     root->setLocalRotation(glm::angleAxis (theta1Z, vec3(0, 0, 1)));
+    quat rot1 = glm::angleAxis (beta, vec3(0, 1, 0));
+    quat rot2 = glm::angleAxis (gamma, vec3(0, 0, 1));
+     quat rot3 = glm::angleAxis (theta1Z, vec3(0, 0, 1));
+     root->setLocalRotation(rot1 * rot2 * rot3);
     skeleton.fk();
 
 
