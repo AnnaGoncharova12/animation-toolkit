@@ -30,6 +30,33 @@ public:
 
    void lookAtTarget(Joint* head, const vec3& target) {
       // TODO: Your code here
+      //float prevAng = atan2((float)prev.y, (float)prev.x);
+      //step1 convert target to local coordinates of the head
+      /*
+      for(int i =0;i<_skeleton.getNumJoints();i++){
+         std::cout<<i<<" "<<_skeleton.getByID(i)->getName()<<std::endl;
+      }
+      */
+      std::vector<Transform> list;
+      
+      Joint* currJoint = head;
+      while(currJoint!=NULL){
+         Transform t = currJoint->getLocal2Parent();
+         list.push_back(t);
+         currJoint = currJoint->getParent();
+      }
+      vec3 targetInLocal = target;
+      for(int i =list.size()-1;i--;i>=0){
+         Transform inv = list[i].inverse();
+          targetInLocal = inv.transformPoint(targetInLocal);
+      }
+      //setp 2 calculate deisred angle of rotation around z using atan2
+      float curr = atan2((float)targetInLocal.y, (float)targetInLocal.x);
+      //float heading = curr - prevAng; 
+      //std::cout<<heading<<std::endl;
+      //prev = vec3(target.x, target.y, target.z);
+      quat newDir = glm::angleAxis (curr, vec3(0, 0, 1));
+      head->setLocalRotation(newDir);
       head->fk();
    }
 
@@ -54,6 +81,7 @@ public:
    Skeleton _skeleton;
    Joint* _head;
    vec3 _target;
+   vec3 prev = vec3(0, 0, 0);
 };
 
 int main(int argc, char** argv) {
