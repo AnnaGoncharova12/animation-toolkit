@@ -37,14 +37,17 @@ public:
          std::cout<<i<<" "<<_skeleton.getByID(i)->getName()<<std::endl;
       }
       */
+      /*
       std::vector<Transform> list;
       
       Joint* currJoint = head;
+      //Joint* currJoint = head->getParent();
       while(currJoint!=NULL){
          Transform t = currJoint->getLocal2Parent();
          list.push_back(t);
          currJoint = currJoint->getParent();
       }
+      //vec3 targetInLocal = target;
       vec3 targetInLocal = target;
       for(int i =list.size()-1;i--;i>=0){
          Transform inv = list[i].inverse();
@@ -57,6 +60,41 @@ public:
       //prev = vec3(target.x, target.y, target.z);
       quat newDir = glm::angleAxis (curr, vec3(0, 0, 1));
       head->setLocalRotation(newDir);
+      head->fk();
+      */
+
+      /*
+      vec3 curr = head->getGlobalTranslation();
+      vec3 dir = glm::normalize(target - curr);
+      */
+      /*
+     std::vector<Transform> list;
+      
+      Joint* currJoint = head;
+      //Joint* currJoint = head->getParent();
+      while(currJoint!=NULL){
+         Transform t = currJoint->getLocal2Parent();
+         list.push_back(t);
+         currJoint = currJoint->getParent();
+      }
+      
+      vec3 targetInLocal = target;
+      for(int i =list.size()-1;i--;i>=0){
+         Transform inv = list[i].inverse();
+          targetInLocal = inv.transformPoint(targetInLocal);
+      }
+
+      vec3 parent = (head->getLocal2Parent().inverse()) * (head->getParent)
+      */
+      vec3 targetLocal = ((head->getLocal2Global()).inverse()).transformPoint(target);
+      vec3 r = vec3(0, 0, 1);
+      vec3 e = (targetLocal - r);
+      float tanPhi = length(cross(r, e))/(dot(r, e) + dot(r, r));
+      float phi = atan(tanPhi);
+  
+      vec3 axis = cross(r, e) / length(cross(r, e));
+      std::cout<<axis<<std::endl;
+      head->setLocalRotation(glm::angleAxis(phi, axis));
       head->fk();
    }
 
