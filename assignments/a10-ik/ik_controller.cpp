@@ -18,6 +18,12 @@ bool IKController::solveIKAnalytic(Skeleton& skeleton,
   }
 
   Joint* knee = ankle->getParent();
+  vec3 limbDir = normalize(parentJoint->getLocalTranslation());
+  vec3 axisKnee = cross(limbDir, vec3(0,0,-1));
+  float angleKnee = 0.0f;
+  if (limbDir[1] < 0) axisKnee = cross(limbDir, vec3(0,0,1));
+  knee->setLocalRotation(glm::angleAxis(angleKnee, axisKnee));
+  knee->fk();
   if (!knee->getParent()) {
     std::cout << "Warning: solveIKAnalytic() needs joint "
       "with parent and grandparent\n";
@@ -25,7 +31,17 @@ bool IKController::solveIKAnalytic(Skeleton& skeleton,
   }
 
   Joint* hip = knee->getParent();
-
+        vec3 targetLocal = ((hip->getLocal2Global()).inverse()).transformPoint(goalPos);
+        vec3 endLocal = ((hip->getLocal2Global()).inverse()).transformPoint(skeleton.getByID(jointid)->getGlobalTranslation());
+        vec3 r = vec3(0, 0, 0)- endLocal ;
+        vec3 e = (targetLocal - r);
+        float tanPhi = length(cross(r, e))/(dot(r, e) + dot(r, r));
+        float angle =  atan(tanPhi);
+        if(length(cross(r, e))>=epsilon){
+        vec3 axis = cross(r, e) / length(cross(r, e));
+        hip->setLocalRotation(glm::angleAxis(angle, axis));
+      }
+        hip->fk();
   // TODO: Your code here
   return true;
 }
