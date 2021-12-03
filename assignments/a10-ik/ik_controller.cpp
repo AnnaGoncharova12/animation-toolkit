@@ -39,24 +39,28 @@ bool IKController::solveIKCCD(Skeleton& skeleton, int jointid,
   // TODO: Your code here
   //||pd - p||
   float dist = glm::length(goalPos - skeleton.getByID(jointid)->getGlobalTranslation());
+  float epsilon = 0.001F;
   int numIters = 0;
   while(dist> threshold && numIters < maxIters){
       for(int i =0;i<chain.size();i++){
         Joint* curr = chain[i];
         vec3 targetLocal = ((curr->getLocal2Global()).inverse()).transformPoint(goalPos);
         vec3 endLocal = ((curr->getLocal2Global()).inverse()).transformPoint(skeleton.getByID(jointid)->getGlobalTranslation());
-        vec3 r = vec3(0, 0, 0) - endLocal ;
+        vec3 r = vec3(0, 0, 0)- endLocal ;
         vec3 e = (targetLocal - r);
         float tanPhi = length(cross(r, e))/(dot(r, e) + dot(r, r));
         float angle = nudgeFactor * atan(tanPhi);
+        if(length(cross(r, e))>=epsilon){
         vec3 axis = cross(r, e) / length(cross(r, e));
         curr->setLocalRotation(glm::angleAxis(angle, axis));
+      }
         curr->fk();
       }
       vec3 pos = skeleton.getByID(jointid)->getGlobalTranslation();
-      std::cout<<pos<<std::endl;
+      //std::cout<<pos<<std::endl;
        //std::cout<<pos<<std::endl;
       dist = glm::length(goalPos - skeleton.getByID(jointid)->getGlobalTranslation());
+      numIters++;
   }
   return false;
 }
