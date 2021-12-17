@@ -60,7 +60,10 @@ AFlee::AFlee() : ABehavior("Flee")
 vec3 AFlee::calculateDesiredVelocity(const ASteerable& actor,
    const AWorld& world, const vec3& targetPos)
 {
-    return vec3(0,0,0);
+   vec3 a = targetPos - actor.getPosition();
+   float max = getParam("MaxSpeed");
+   vec3 vel = -(a/length(a))*max;
+    return vel;
 }
 
 //--------------------------------------------------------------
@@ -69,8 +72,9 @@ vec3 AFlee::calculateDesiredVelocity(const ASteerable& actor,
 AArrival::AArrival() : ABehavior("Arrival") 
 {
    // TODO: Set good parameters
-   setParam("kArrival", 1);
-   setParam("TargetRadius", 1);
+   setParam("kArrival", 100);
+   setParam("TargetRadius", 100);
+  
 }
 
 //
@@ -82,7 +86,19 @@ AArrival::AArrival() : ABehavior("Arrival")
 vec3 AArrival::calculateDesiredVelocity(const ASteerable& actor,
    const AWorld& world, const vec3& targetPos)
 {
-    return vec3(0,0,0);
+    vec3 a = targetPos - actor.getPosition();
+   float max = getParam("MaxSpeed");
+   float dist = length(a);
+   float r = getParam("TargetRadius");
+   float speed = 0;
+   if(dist <= r){
+      speed = (dist/r)*max;
+   }
+   else{
+      speed = max;
+   }
+   vec3 vel = speed*(a/dist);
+    return vel;
 }
 
 //--------------------------------------------------------------
@@ -90,9 +106,9 @@ vec3 AArrival::calculateDesiredVelocity(const ASteerable& actor,
 
 ADeparture::ADeparture() : ABehavior("Departure") 
 {
-   setParam("InnerRadius", 1);
-   setParam("OuterRadius", 1);
-   setParam("kDeparture", 1);
+   setParam("InnerRadius", 10);
+   setParam("OuterRadius", 100);
+   setParam("kDeparture", 100);
 }
 
 //
@@ -101,7 +117,19 @@ ADeparture::ADeparture() : ABehavior("Departure")
 vec3 ADeparture::calculateDesiredVelocity(const ASteerable& actor,
    const AWorld& world, const vec3& targetPos)
 {
-   return vec3(0,0,0);
+   vec3 a = targetPos - actor.getPosition();
+   float max = getParam("MaxSpeed");
+   float dist = length(a);
+   float r = getParam("TargetRadius");
+   float speed = 0;
+   if(dist <= r){
+      speed = (dist/r)*max;
+   }
+   else{
+      speed = max;
+   }
+   vec3 vel = -speed*(a/dist);
+    return vel;
 }
 
 //--------------------------------------------------------------
